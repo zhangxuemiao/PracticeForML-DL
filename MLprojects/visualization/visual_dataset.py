@@ -4,7 +4,7 @@ import numpy as np
 
 class DataSet():
     def __init__(self):
-        self.fileName = '/tmp/temp/SVM/testSet.txt'
+        self.fileName = '../dataForVisualization/testSet.txt'
         self.records = None # 所有的记录，一条记录包括，一个样本及样本分类标签
         self.samples = None # 所有的样本，不含分类标签
         self.sampleLabels = None # 所有样本的分类标签，与样本一一对应
@@ -58,6 +58,8 @@ class DataSet():
         for negSample in self.separatedSamplesByClass['neg']:
             negativeXX.append(negSample[0])
             negativeYY.append(negSample[1])
+
+        print('positiveXX=\n', positiveXX)
 
         plt.figure()
         subplt = plt.subplot(1,1,1)

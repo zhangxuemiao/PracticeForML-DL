@@ -1,10 +1,9 @@
 # coding: utf-8
 import numpy as np
-
-
 class PcaReducer(object):
     def __init__(self):
         print('use PCA(Principal Components Analysis) algorithm to reduce the dimension....')
+
 
     def zeroMean(self, dataMat):
         '''
@@ -16,9 +15,10 @@ class PcaReducer(object):
         :param dataMat:
         :return: 该函数返回两个变量，newData是零均值化后的数据，meanVal是每个特征的均值，是给后面重构数据用的。
         '''
-        meanVal = np.mean(dataMat, axis=0)  # 按列求均值，即求各个特征的均值
-        newData = dataMat - meanVal
-        return newData, meanVal
+        meanVal=np.mean(dataMat,axis=0)     #按列求均值，即求各个特征的均值
+        newData=dataMat-meanVal
+        return newData,meanVal
+
 
     def pca(self, dataMat, n):
         newData, meanVal = self.zeroMean(dataMat)
@@ -67,19 +67,21 @@ class PcaReducer(object):
         '''
         return lowDDataMat, reconMat
 
-    def percentage2n(self, eigVals, percentage):
-        sortArray = np.sort(eigVals)  # 升序
-        sortArray = sortArray[-1::-1]  # 逆转，即降序
-        arraySum = sum(sortArray)
-        tmpSum = 0
-        num = 0
+
+    def percentage2n(self, eigVals,percentage):
+        sortArray=np.sort(eigVals)   #升序
+        sortArray=sortArray[-1::-1]  #逆转，即降序
+        arraySum=sum(sortArray)
+        tmpSum=0
+        num=0
         for i in sortArray:
-            tmpSum += i
-            num += 1
-            if tmpSum >= arraySum * percentage:
+            tmpSum+=i
+            num+=1
+            if tmpSum>=arraySum*percentage:
                 return num
 
-    def pcaByPercentage(self, dataMat, percentage=0.99):
+
+    def pcaByPercentage(self, dataMat,percentage=0.99):
         '''
         应用PCA的时候，对于一个1000维的数据，我们怎么知道要降到几维的数据才是合理的？
         即n要取多少，才能保留最多信息同时去除最多的噪声？一般，我们是通过方差百分比来确定n的，
@@ -90,13 +92,22 @@ class PcaReducer(object):
         :param percentage:
         :return:
         '''
-        newData, meanVal = self.zeroMean(dataMat)
-        covMat = np.cov(newData, rowvar=0)  # 求协方差矩阵,return ndarray；若rowvar非0，一列代表一个样本，为0，一行代表一个样本
-        eigVals, eigVects = np.linalg.eig(np.mat(covMat))  # 求特征值和特征向量,特征向量是按列放的，即一列代表一个特征向量
-        n = self.percentage2n(eigVals, percentage)  # 要达到percent的方差百分比，需要前n个特征向量
-        eigValIndice = np.argsort(eigVals)  # 对特征值从小到大排序
-        n_eigValIndice = eigValIndice[-1:-(n + 1):-1]  # 最大的n个特征值的下标
-        n_eigVect = eigVects[:, n_eigValIndice]  # 最大的n个特征值对应的特征向量
-        lowDDataMat = newData * n_eigVect  # 低维特征空间的数据
-        reconMat = (lowDDataMat * n_eigVect.T) + meanVal  # reconMat是重构的数据，乘以n_eigVect的转置矩阵，再加上均值meanVal。
-        return lowDDataMat, reconMat
+        newData,meanVal=self.zeroMean(dataMat)
+        covMat=np.cov(newData,rowvar=0)    #求协方差矩阵,return ndarray；若rowvar非0，一列代表一个样本，为0，一行代表一个样本
+        eigVals,eigVects=np.linalg.eig(np.mat(covMat))#求特征值和特征向量,特征向量是按列放的，即一列代表一个特征向量
+        n=self.percentage2n(eigVals,percentage)                 #要达到percent的方差百分比，需要前n个特征向量
+        eigValIndice=np.argsort(eigVals)            #对特征值从小到大排序
+        n_eigValIndice=eigValIndice[-1:-(n+1):-1]   #最大的n个特征值的下标
+        n_eigVect=eigVects[:,n_eigValIndice]        #最大的n个特征值对应的特征向量
+        lowDDataMat=newData*n_eigVect               #低维特征空间的数据
+        reconMat=(lowDDataMat*n_eigVect.T)+meanVal  #reconMat是重构的数据，乘以n_eigVect的转置矩阵，再加上均值meanVal。
+        return lowDDataMat,reconMat
+
+
+if __name__ == '__main__':
+    sampleDataSet = np.array(
+        [[1, 1, 2, 4, 2],
+         [1, 3, 3, 4, 4]])
+    dataMat = sampleDataSet.T
+    pcaReducer = PcaReducer()
+    print(pcaReducer.pca(dataMat, 1))
